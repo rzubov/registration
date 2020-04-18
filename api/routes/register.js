@@ -35,7 +35,11 @@ async function post(req, res, next) {
 
 async function get(req, res, next) {
 
-    const users = await db.models.Registration.findAll();
+    const users = await db.models.Registration.findAll({
+        attributes: {
+            exclude: ["password"]
+        }
+    });
     res.send({
         "kind": "success",
         "users": users
