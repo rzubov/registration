@@ -3,20 +3,27 @@ const morgan = require('morgan');
 
 const apicache = require('apicache');
 const redis = require('redis');
+const i18n = require("i18n");
 
-const registerRoutes = require('./routes/register');
-const registrationConfirm = require('./routes/registration-confirm');
+i18n.configure({
+    locales: ['en', 'ru'],
+    directory: __dirname + '/locales'
+});
 
 
 const server = restify.createServer({
     name: 'registration'
 });
 
+const setLanguage = require(`./middlewares/setLanguage`);
+
+server.use(i18n.init);
 server.use(morgan('dev'));
 server.use(restify.plugins.acceptParser(server.acceptable));
 server.use(restify.plugins.queryParser());
 server.use(restify.plugins.bodyParser());
 server.use(restify.plugins.throttle({burst: 1000, rate: 50, ip: true}));
+server.use(setLanguage);
 
 
 let cacheWithRedis = apicache.options({
@@ -25,6 +32,10 @@ let cacheWithRedis = apicache.options({
     },
     redisClient: redis.createClient(6379, process.env.REDIS_HOST)
 }).middleware
+
+
+const registerRoutes = require('./routes/register');
+const registrationConfirm = require('./routes/registration-confirm');
 
 
 server.post('/user/register',

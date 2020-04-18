@@ -1,24 +1,26 @@
 const db = require('../models');
 
 async function post(req, res, next) {
-    console.log(req.body)
+    const {request} = req.body;
 
     try {
         await db.models.Registration.create({
-            email: req.body.email,
-            password: db.sequelize.fn('crypt', req.body.password, db.sequelize.fn('gen_salt', 'bf', 8)),
-            phone: req.body.phone
+            email: request.email,
+            password: db.sequelize.fn('crypt', request.password, db.sequelize.fn('gen_salt', 'bf', 8)),
+            phone: request.phone
         });
+
+
         res.send({
             "kind": "success",
             "response": {
-                "message": "Email has been sent"
+                "message": res.__("Email has been sent")
             }
         });
     } catch (e) {
-        console.log(e)
+
         const errors = e.errors.map(err => ({
-            [err.path]: err.message
+            [err.path]: res.__(err.message)
         }));
 
         res.send({
