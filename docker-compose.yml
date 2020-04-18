@@ -1,0 +1,56 @@
+version: '3'
+
+networks:
+  backend:
+    driver: ${NETWORKS_DRIVER}
+
+volumes:
+  postgres:
+    driver: ${VOLUMES_DRIVER}
+  redis:
+    driver: ${VOLUMES_DRIVER}
+
+services:
+  api:
+    container_name: api
+    build: ./api
+    command: ["./start.sh", "database:5432", "--", "npm", "start"]
+    depends_on:
+      - postgres
+    links:
+      - postgres
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    environment:
+      - DB_HOST=postgres
+      - REDIS_HOST=redis
+    networks:
+      - backend
+    volumes:
+      - ./api:/usr/app/
+      - /usr/app/node_modules
+    restart: on-failure
+
+  postgres:
+    build: postgres
+    volumes:
+      - /var/lib/docker/basedata:/var/lib/postgresql/data
+      - ${DATA_PATH_HOST}/postgres:/mnt/largedb
+      - ${POSTGRES_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    networks:
+      - backend
+  redis:
+    build: redis
+    volumes:
+      - ${DATA_PATH_HOST}/redis:/data
+    ports:
+      - "6379:6379"
+    networks:
+      - backend
