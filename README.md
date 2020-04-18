@@ -36,12 +36,10 @@ POST http://localhost:5050/user/register
 
 ```
 GET http://localhost:5050/users
+```
 
-{
-    "email": "email@example.com",
-    "password": "password.",
-    "phone":"5553535"
-}
+```
+GET http://localhost:5050/registration-confirm/:code
 ```
 
 
