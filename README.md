@@ -3,7 +3,7 @@
 
 > npm install -g sequelize-cli pg
 
-## Feature implemented list
+## Features implemented list
 - Docker environment
 - migrations for registration table
 - sequalize model
@@ -14,7 +14,7 @@
 - password validation, email validation
 - requests limit be ip
 
-##TODO
+## TODO
 - Code Cleanup
 - Contractual adjustments, responses adjustments
 - Error Messages Localization?
